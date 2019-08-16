@@ -1,0 +1,93 @@
+package cn.j8.tcp.http;
+
+import cn.j8.tcp.sock.NioService;
+import cn.j8.tcp.sock.ProtocalParser;
+import cn.j8.tcp.sock.ProtocalParserFactory;
+import cn.j8.tcp.sock.ServiceConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class HttpService {
+	
+	private static Logger logger = LoggerFactory.getLogger(HttpService.class);
+
+	private int soTimeout = 3000; //默认3s的读超时，够长了
+	private int port = 9999;
+	private int reactorCount = Runtime.getRuntime().availableProcessors();
+	private int worderCount = Runtime.getRuntime().availableProcessors();
+	private int maxSendBuffSize = 100*1024*1024; //默认响应包大小最大100M
+	
+	private NioService service;
+	private HttpJob job;
+	public HttpService(HttpJob job){
+		this.job = job;
+	}
+	
+	public int getSoTimeout() {
+		return soTimeout;
+	}
+
+	public void setSoTimeout(int soTimeout) {
+		this.soTimeout = soTimeout;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
+
+	public int getReactorCount() {
+		return reactorCount;
+	}
+
+	public void setReactorCount(int reactorCount) {
+		this.reactorCount = reactorCount;
+	}
+
+	public int getWorderCount() {
+		return worderCount;
+	}
+
+	public void setWorderCount(int worderCount) {
+		this.worderCount = worderCount;
+	}
+	
+	public int getMaxSendBuffSize() {
+		return maxSendBuffSize;
+	}
+
+	public void setMaxSendBuffSize(int maxSendBuffSize) {
+		this.maxSendBuffSize = maxSendBuffSize;
+	}
+
+	public boolean init(){
+		ServiceConfig config = new ServiceConfig();
+		config.setSoTimeout(soTimeout);
+		config.setMaxSendBufferSize(maxSendBuffSize);
+		
+		service = new NioService(port);
+		service.setReactorCount(reactorCount);
+		service.setWorkerCount(worderCount);
+		service.setJob(this.job);
+		service.setConfig(config);
+		service.setProtocalParserFactory(new ProtocalParserFactory() {
+			@Override
+			public ProtocalParser create() {
+				return new HttpParser();
+			}
+		});
+		return service.init();
+	}
+	
+	public void run(){
+		//开始监听用户请求
+		logger.info("服务启动成功，开始监听用户请求");
+		while(!service.accpet()){
+			logger.error("服务出现错误，重启Acceptor!");
+			try{Thread.sleep(2000);}catch(Exception e){break;}
+		}
+	}
+}
