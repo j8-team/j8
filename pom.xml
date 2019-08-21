@@ -12,6 +12,8 @@
         <module>mq</module>
         <module>json</module>
         <module>tcp</module>
+        <module>consul</module>
+        <module>es</module>
     </modules>
 
     <properties>

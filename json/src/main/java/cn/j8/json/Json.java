@@ -39,7 +39,7 @@ public abstract class Json{
             return new JsonObj(text);
         if(text.startsWith("["))
             return new JsonArray(text);
-        throw new JSONException("error format");
+        return null;
     }
 
     public JsonObj asObj(){
@@ -52,4 +52,5 @@ public abstract class Json{
 
     public abstract boolean isObject();
     public abstract boolean isArray();
+    public abstract int size();
 }

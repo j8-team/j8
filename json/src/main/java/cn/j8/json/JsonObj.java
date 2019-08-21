@@ -70,13 +70,18 @@ public class JsonObj extends Json {
         return obj.containsKey(key) ? obj.getDoubleValue(key) : defaultValue;
     }
 
-    public <T> T val(String key) {
+    public <T> T val(String key, boolean raw) {
         Object t = obj.get(key);
-        if (t instanceof JSONObject)
+        if (t instanceof JSONObject && !raw) {
             return (T) (new JsonObj((JSONObject) t));
-        if (t instanceof JSONArray)
+        }
+        if (t instanceof JSONArray && !raw)
             return (T) (new JsonArray((JSONArray) t));
         return (T) t;
+    }
+
+    public <T> T val(String key){
+        return val(key, false);
     }
 
     @Override
@@ -87,5 +92,10 @@ public class JsonObj extends Json {
     @Override
     public boolean isArray() {
         return false;
+    }
+
+    @Override
+    public int size() {
+        return obj.size();
     }
 }

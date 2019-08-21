@@ -54,16 +54,21 @@ public class JsonArray extends Json {
         return arr.getDoubleValue(idx);
     }
 
-    public <T> T val(int idx) {
+    public <T> T val(int idx, boolean raw) {
         Object t = arr.get(idx);
-        if (t instanceof JSONObject)
+        if (t instanceof JSONObject && !raw)
             return (T) (new JsonObj((JSONObject) t));
-        if (t instanceof JSONArray)
+        if (t instanceof JSONArray && !raw)
             return (T) (new JsonArray((JSONArray) t));
         return (T) t;
     }
 
-    public int size(){
+    public <T> T val(int idx) {
+        return val(idx, false);
+    }
+
+    @Override
+    public int size() {
         return arr.size();
     }
 
