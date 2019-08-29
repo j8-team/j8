@@ -18,6 +18,8 @@ public class ServiceCaller {
     private int idx = 0;
     public Json call(String path, Json param){
         List<String> hosts = detector.detect(serviceName);
+        if(hosts.size() == 0)
+            return null;
 
         String host = hosts.get(idx++ % hosts.size());
         String url = "http://" + host + path;
