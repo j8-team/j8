@@ -14,7 +14,7 @@ class ServiceDetector {
     }
 
     public List<String> detect(String serviceName){
-        String url = "http://" + consulHost + "/v1/agent/health/service/name/" + serviceName;
+        String url = "http://" + consulHost + "/v1/catalog/service/" + serviceName;
 
         String resp = HttpClient.instance.get(url);
         if(StringUtils.isBlank(resp)){
@@ -25,16 +25,20 @@ class ServiceDetector {
         Json json = Json.parse(resp);
         for(int i=0; i<json.size(); ++i){
             Json obj = json.asArray().val(i);
-            String status = obj.asObj().strVal("AggregatedStatus");
-            if(!"passing".equalsIgnoreCase(status))
-                continue;
+//            String status = obj.asObj().strVal("AggregatedStatus");
+//            if(!"passing".equalsIgnoreCase(status))
+//                continue;
+//
+//            Json service = obj.asObj().val("Service");
+//            String addr = service.asObj().strVal("Address");
 
-            Json service = obj.asObj().val("Service");
-            String addr = service.asObj().strVal("Address");
-            int port = service.asObj().intVal("Port");
+            //FIXME 这里还要增加对节点健康度的检查，时间原因国庆后再来！
+
+
+            String addr = obj.asObj().strVal("Address");
+            int port = obj.asObj().intVal("ServicePort");
             hosts.add(addr + ":" + port);
         }
         return hosts;
     }
-
 }

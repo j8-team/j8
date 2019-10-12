@@ -15,6 +15,7 @@
         <module>consul</module>
         <module>es</module>
         <module>quartz</module>
+        <module>log</module>
     </modules>
 
     <properties>

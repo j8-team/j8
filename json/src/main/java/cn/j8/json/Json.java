@@ -1,6 +1,8 @@
 package cn.j8.json;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 
 public abstract class Json{
     public static Json object(){
@@ -35,6 +37,8 @@ public abstract class Json{
     }
 
     public static Json parse(String text){
+        if(text == null || text.trim().length() == 0)
+            return null;
         if(text.startsWith("{"))
             return new JsonObj(text);
         if(text.startsWith("["))
@@ -53,4 +57,5 @@ public abstract class Json{
     public abstract boolean isObject();
     public abstract boolean isArray();
     public abstract int size();
+
 }
